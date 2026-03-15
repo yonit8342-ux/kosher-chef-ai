@@ -1,14 +1,14 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. הגדרת המפתח של גוגל בינה מלאכותית
-GOOGLE_API_KEY = "AIzaSyDl0NKD7aRmNGUmVKQQAxUpDdCgEo3RSjU"
+# 1. הגדרת המפתח האישי החדש שלך
+GOOGLE_API_KEY = "AIzaSyCaM8ywwJKJsYc0-FKv3AaxF0jPH9-3byY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # 2. הגדרות דף
 st.set_page_config(page_title="שף בינה מלאכותית", page_icon="🍲")
 
-# 3. חיבור ל-Google Analytics
+# 3. חיבור ל-Google Analytics (המזהה שלך)
 GA_ID = "G-4WZTVRVRHX" 
 st.markdown(f"""
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
@@ -51,8 +51,8 @@ if st.button("צור מתכון עכשיו"):
     if ingredients:
         with st.spinner('השף חושב על מתכון...'):
             try:
-                # שימוש בשם המודל המלא והמעודכן ביותר
-                model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
+                # שימוש במודל Gemini 1.5 Flash
+                model = genai.GenerativeModel('gemini-1.5-flash')
                 
                 prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה בשלבים."
                 
@@ -66,11 +66,10 @@ if st.button("צור מתכון עכשיו"):
                     st.error("לא התקבל תוכן. נסה שוב.")
                     
             except Exception as e:
-                st.error("חלה שגיאה בחיבור לשרת ה-AI.")
-                # מציג את השגיאה בצורה נקייה יותר
-                st.info(f"מנסה להתחבר שוב... בדוק את המצרכים שהזנת.")
+                st.error("חלה שגיאה בחיבור.")
+                st.info("אנא וודאו שהמפתח הופעל כראוי ב-Google AI Studio.")
     else:
         st.warning("נא להזין לפחות מצרך אחד.")
 
 st.markdown("---")
-st.caption("מערכת המדידה פעילה | השף מוכן לעבודה")
+st.caption("השף הדיגיטלי מוכן | המדידה פעילה")
