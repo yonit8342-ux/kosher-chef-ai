@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. הגדרת המפתח החדש שנוצר
+# 1. הגדרת המפתח החדש
 GOOGLE_API_KEY = "AIzaSyAwRvhLE2Aft8KSNiCqNol_nmVHOh1Y1TY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
@@ -51,25 +51,25 @@ if st.button("צור מתכון עכשיו"):
     if ingredients:
         with st.spinner('השף חושב על מתכון...'):
             try:
-                # שימוש במודל Gemini 1.5 Flash
+                # ניסיון להשתמש במודל הפשוט ביותר
                 model = genai.GenerativeModel('gemini-1.5-flash')
                 
                 prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה ברורים."
                 
                 response = model.generate_content(prompt)
                 
-                if response.text:
+                if response:
                     st.success("הנה המתכון שלך:")
                     st.markdown("---")
                     st.write(response.text)
-                else:
-                    st.error("לא התקבל תוכן. נסה שוב.")
-                    
+                
             except Exception as e:
-                st.error("חלה שגיאה בחיבור.")
-                st.info("אם המפתח חדש, ייתכן שייקח לגוגל דקה אחת להפעיל אותו סופית.")
+                # הצגת הודעת שגיאה מפורטת כדי שנבין מה הבעיה
+                st.error("התחברות ראשונית נכשלה.")
+                st.warning(f"פרטי השגיאה: {str(e)}")
+                st.info("אם המפתח חדש, גוגל לפעמים צריכה עד 5 דקות להפעלתו. נסו שוב בעוד רגע.")
     else:
         st.warning("נא להזין לפחות מצרך אחד.")
 
 st.markdown("---")
-st.caption("השף הדיגיטלי מוכן | המדידה פעילה")
+st.caption("השף הדיגיטלי | בבדיקת חיבור")
