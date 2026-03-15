@@ -5,7 +5,7 @@ import google.generativeai as genai
 GOOGLE_API_KEY = "AIzaSyAwRvhLE2Aft8KSNiCqNol_nmVHOh1Y1TY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# הגדרות דף ו-RTL
+# עיצוב RTL
 st.set_page_config(page_title="שף בינה מלאכותית", page_icon="🍲")
 st.markdown("""
     <style>
@@ -18,20 +18,17 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("🍲 שף בינה מלאכותית")
-
-ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, בצל...")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, עוף...")
 
 if st.button("צור מתכון עכשיו"):
     if ingredients:
-        with st.spinner('השף מתחבר לשרת היציב...'):
+        with st.spinner('מתחבר לשרת...'):
             try:
-                # כפיית שימוש במודל ללא v1beta
+                # שימוש בגרסה יציבה בלבד
                 model = genai.GenerativeModel('gemini-1.5-flash')
                 response = model.generate_content(f"צור מתכון כשר ופשוט בעברית עבור: {ingredients}")
-                
-                if response.text:
-                    st.success("הנה המתכון:")
-                    st.write(response.text)
+                st.success("הנה המתכון:")
+                st.write(response.text)
             except Exception as e:
-                st.error("השף נתקל בבעיה.")
-                st.caption(f"פרטי שגיאה: {str(e)}")
+                st.error("השגיאה עדיין מופיעה? וודא שקובץ ה-requirements.txt נמצא בתיקייה הראשית.")
+                st.caption(f"פרטים: {str(e)}")
