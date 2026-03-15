@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 
 # הגדרת המפתח של גוגל
-GOOGLE_API_KEY = "AIzaSyDl0NKD7aRmNGUmVKQQAxUpDdCgEo3RSjU"
+GOOGLE_API_KEY = "AIzaSyAwRvhLE2Aft8KSNiCqNol_nmVHOh1Y1TY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 st.set_page_config(page_title="שף בינה מלאכותית", page_icon="🍲")
