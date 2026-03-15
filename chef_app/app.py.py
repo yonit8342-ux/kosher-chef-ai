@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. הגדרת המפתח שלך
+# 1. הגדרת המפתח האישי שלך
 GOOGLE_API_KEY = "AIzaSyAwRvhLE2Aft8KSNiCqNol_nmVHOh1Y1TY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
@@ -15,7 +15,10 @@ st.markdown("""
         direction: RTL;
         text-align: right;
     }
-    input { direction: RTL !important; text-align: right !important; }
+    input {
+        direction: RTL !important;
+        text-align: right !important;
+    }
     div.stButton > button {
         width: 100%;
         border-radius: 10px;
@@ -28,35 +31,38 @@ st.markdown("""
 
 # --- תוכן האתר ---
 st.title("🍲 שף בינה מלאכותית")
-st.write("הזינו מצרכים והשף יבנה לכם מתכון כשר וטעים.")
+st.write("שלום! כתבו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים.")
 
-ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, בצל, עוף...")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, פטריות, בצל...")
 
 if st.button("צור מתכון עכשיו"):
     if ingredients:
-        with st.spinner('השף בודק את המזווה...'):
+        with st.spinner('השף מתחבר לשרת היציב...'):
             try:
-                # התיקון: שימוש בשם המודל בלבד ללא קידומות שגורמות לשגיאות גרסה
+                # שימוש במודל Gemini 1.5 Flash - בגרסה היציבה
                 model = genai.GenerativeModel('gemini-1.5-flash')
                 
-                prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה ברורות."
+                prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה בשלבים."
                 
                 # יצירת התוכן
                 response = model.generate_content(prompt)
                 
-                if response and response.text:
+                if response.text:
                     st.success("הנה המתכון שלך:")
                     st.markdown("---")
                     st.write(response.text)
                 else:
-                    st.error("השרת לא החזיר תשובה. נסו שוב בעוד רגע.")
-                
+                    st.error("לא התקבל תוכן. נסה שוב.")
+                    
             except Exception as e:
-                st.error("השף נתקל בבעיה טכנית.")
-                # מציג את השגיאה בקטן כדי שנדע מה קרה אם זה עדיין לא עובד
-                st.caption(f"פרטי שגיאה: {str(e)}")
+                # אם עדיין יש שגיאת 404, זה אומר שהספרייה צריכה עדכון
+                st.error("השף נתקל בקושי בחיבור לשרת גוגל.")
+                if "404" in str(e):
+                    st.warning("שרת גוגל עדיין מפנה לגרסה ישנה. נסו שוב בעוד דקה.")
+                else:
+                    st.caption(f"פרטים טכניים: {str(e)}")
     else:
-        st.warning("נא להזין מצרכים.")
+        st.warning("נא להזין לפחות מצרך אחד.")
 
 st.markdown("---")
-st.caption("השף הדיגיטלי | גרסה יציבה")
+st.caption("השף הדיגיטלי מוכן | המדידה פעילה")
