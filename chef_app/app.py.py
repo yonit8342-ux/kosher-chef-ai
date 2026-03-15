@@ -45,14 +45,14 @@ st.markdown("""
 st.title("🍲 שף בינה מלאכותית")
 st.write("שלום! כתבו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים.")
 
-ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, בצל, ביצים...")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, פטריות, בצל...")
 
 if st.button("צור מתכון עכשיו"):
     if ingredients:
         with st.spinner('השף חושב על מתכון...'):
             try:
-                # ניסיון להשתמש במודל הפשוט ביותר
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                # שינוי קריטי: שימוש בשם המודל המלא ללא תלות בגרסת ה-API
+                model = genai.GenerativeModel(model_name='models/gemini-1.5-flash')
                 
                 prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה ברורים."
                 
@@ -64,12 +64,11 @@ if st.button("צור מתכון עכשיו"):
                     st.write(response.text)
                 
             except Exception as e:
-                # הצגת הודעת שגיאה מפורטת כדי שנבין מה הבעיה
-                st.error("התחברות ראשונית נכשלה.")
+                st.error("התחברות נכשלה.")
                 st.warning(f"פרטי השגיאה: {str(e)}")
-                st.info("אם המפתח חדש, גוגל לפעמים צריכה עד 5 דקות להפעלתו. נסו שוב בעוד רגע.")
+                st.info("מנסה לעקוף את בעיית הגרסה...")
     else:
         st.warning("נא להזין לפחות מצרך אחד.")
 
 st.markdown("---")
-st.caption("השף הדיגיטלי | בבדיקת חיבור")
+st.caption("השף הדיגיטלי | בבדיקת חיבור מעוקפת")
