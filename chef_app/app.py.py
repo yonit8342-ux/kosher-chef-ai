@@ -15,10 +15,7 @@ st.markdown("""
         direction: RTL;
         text-align: right;
     }
-    input {
-        direction: RTL !important;
-        text-align: right !important;
-    }
+    input { direction: RTL !important; text-align: right !important; }
     div.stButton > button {
         width: 100%;
         border-radius: 10px;
@@ -31,32 +28,35 @@ st.markdown("""
 
 # --- תוכן האתר ---
 st.title("🍲 שף בינה מלאכותית")
-st.write("שלום! כתבו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים.")
+st.write("הזינו מצרכים והשף יבנה לכם מתכון כשר וטעים.")
 
-ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, פטריות, בצל...")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, בצל, עוף...")
 
 if st.button("צור מתכון עכשיו"):
     if ingredients:
-        with st.spinner('השף חושב על מתכון...'):
+        with st.spinner('השף בודק את המזווה...'):
             try:
-                # שימוש בגרסה הכי יציבה של המודל
+                # התיקון: שימוש בשם המודל בלבד ללא קידומות שגורמות לשגיאות גרסה
                 model = genai.GenerativeModel('gemini-1.5-flash')
                 
-                prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה ברורים."
+                prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה ברורות."
                 
-                # יצירת התוכן בצורה הפשוטה ביותר
+                # יצירת התוכן
                 response = model.generate_content(prompt)
                 
-                if response.text:
+                if response and response.text:
                     st.success("הנה המתכון שלך:")
                     st.markdown("---")
                     st.write(response.text)
+                else:
+                    st.error("השרת לא החזיר תשובה. נסו שוב בעוד רגע.")
                 
             except Exception as e:
-                st.error("חלה שגיאה בחיבור.")
+                st.error("השף נתקל בבעיה טכנית.")
+                # מציג את השגיאה בקטן כדי שנדע מה קרה אם זה עדיין לא עובד
                 st.caption(f"פרטי שגיאה: {str(e)}")
     else:
-        st.warning("נא להזין לפחות מצרך אחד.")
+        st.warning("נא להזין מצרכים.")
 
 st.markdown("---")
 st.caption("השף הדיגיטלי | גרסה יציבה")
