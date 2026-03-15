@@ -5,7 +5,7 @@ import google.generativeai as genai
 GOOGLE_API_KEY = "AIzaSyCaM8ywwJKJsYc0-FKv3AaxF0jPH9-3byY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# 2. הגדרות דף
+# 2. הגדרות דף (חובה להופיע ראשון)
 st.set_page_config(page_title="שף בינה מלאכותית", page_icon="🍲")
 
 # 3. חיבור ל-Google Analytics (המזהה שלך)
@@ -20,7 +20,7 @@ st.markdown(f"""
     </script>
     """, unsafe_allow_html=True)
 
-# 4. עיצוב יישור לימין (RTL)
+# 4. עיצוב יישור לימין (RTL) ותצוגה נקייה
 st.markdown("""
     <style>
     .main, .stTextInput, .stButton, div[data-testid="stMarkdownContainer"] {
@@ -45,6 +45,7 @@ st.markdown("""
 st.title("🍲 שף בינה מלאכותית")
 st.write("שלום! כתבו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים.")
 
+# תיבת קלט
 ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, פטריות, בצל...")
 
 if st.button("צור מתכון עכשיו"):
@@ -54,6 +55,7 @@ if st.button("צור מתכון עכשיו"):
                 # שימוש במודל Gemini 1.5 Flash
                 model = genai.GenerativeModel('gemini-1.5-flash')
                 
+                # הנחיה למודל
                 prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה בשלבים."
                 
                 response = model.generate_content(prompt)
@@ -67,7 +69,7 @@ if st.button("צור מתכון עכשיו"):
                     
             except Exception as e:
                 st.error("חלה שגיאה בחיבור.")
-                st.info("אנא וודאו שהמפתח הופעל כראוי ב-Google AI Studio.")
+                st.info("אנא וודאו שהמפתח הופעל כראוי ב-Google AI Studio ושהגדרתם את ה-Billing (גם אם בחינם).")
     else:
         st.warning("נא להזין לפחות מצרך אחד.")
 
