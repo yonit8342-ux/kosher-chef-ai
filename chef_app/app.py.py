@@ -1,14 +1,15 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. הגדרת המפתח של גוגל בינה מלאכותית (API Key)
+# 1. הגדרת המפתח של גוגל בינה מלאכותית
+# וודא שהמפתח הבא תקף. אם יש שגיאה אדומה, מומלץ להחליפו במפתח חדש מ-Google AI Studio
 GOOGLE_API_KEY = "AIzaSyDl0NKD7aRmNGUmVKQQAxUpDdCgEo3RSjU"
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# 2. הגדרות דף (חובה להופיע ראשון)
+# 2. הגדרות דף (חייב להופיע ראשון)
 st.set_page_config(page_title="שף בינה מלאכותית", page_icon="🍲")
 
-# 3. חיבור ל-Google Analytics (הקוד האישי שלך)
+# 3. חיבור ל-Google Analytics (המזהה שלך)
 GA_ID = "G-4WZTVRVRHX" 
 st.markdown(f"""
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
@@ -20,7 +21,7 @@ st.markdown(f"""
     </script>
     """, unsafe_allow_html=True)
 
-# 4. עיצוב האתר ליישור לימין (RTL) ושיפור המראה
+# 4. עיצוב יישור לימין (RTL)
 st.markdown("""
     <style>
     .main, .stTextInput, .stButton, div[data-testid="stMarkdownContainer"] {
@@ -43,32 +44,36 @@ st.markdown("""
 
 # --- תוכן האתר ---
 st.title("🍲 שף בינה מלאכותית")
-st.write("ברוכים הבאים! הזינו מצרכים וקבלו מתכון כשר וטעים תוך שניות.")
+st.write("שלום! כתבו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים.")
 
-# תיבת קלט מהמשתמש
-ingredients = st.text_input("מה המצרכים שיש לך היום?", placeholder="למשל: תפוחי אדמה, פטריות, בצל...")
+# תיבת קלט
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: אורז, עוף, גזר...")
 
 if st.button("צור מתכון עכשיו"):
     if ingredients:
-        with st.spinner('השף מכין לך משהו טעים...'):
+        with st.spinner('השף חושב על מתכון...'):
             try:
-                # קריאה למודל Gemini Flash
-                model = genai.GenerativeModel('models/gemini-1.5-flash')
+                # שימוש במודל Gemini 1.5 Flash
+                model = genai.GenerativeModel('gemini-1.5-flash')
                 
-                # הנחיה לבינה המלאכותית
-                prompt = f"יש לי את המצרכים הבאים: {ingredients}. תכתוב לי בבקשה מתכון כשר, טעים ופשוט להכנה בשפה העברית. הקפד על שלבי הכנה ברורים ומפורטים."
+                # הנחיה למודל
+                prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה בשלבים."
                 
                 response = model.generate_content(prompt)
                 
-                st.success("הנה המתכון שהכנתי עבורך:")
-                st.markdown("---")
-                st.write(response.text)
-                
+                if response.text:
+                    st.success("הנה המתכון שלך:")
+                    st.markdown("---")
+                    st.write(response.text)
+                else:
+                    st.error("לא התקבל תוכן מהבינה המלאכותית. נסה שוב.")
+                    
             except Exception as e:
-                st.error("חלה שגיאה בחיבור לשרת הבינה המלאכותית.")
-                st.info("נסה לרענן את הדף או לבדוק את החיבור לאינטרנט.")
+                st.error("חלה שגיאה בחיבור לשרת ה-AI.")
+                # הדפסת השגיאה הטכנית למקרה שתרצה לבדוק לעומק
+                st.info(f"פרטי שגיאה: {str(e)}")
     else:
-        st.warning("בבקשה תכתוב לפחות מצרך אחד.")
+        st.warning("נא להזין לפחות מצרך אחד.")
 
 st.markdown("---")
-st.caption("נוצר על ידי השף הדיגיטלי | המדידה פעילה")
+st.caption("מערכת המדידה פעילה | כל הזכויות שמורות לשף הדיגיטלי")
