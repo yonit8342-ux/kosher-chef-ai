@@ -66,3 +66,4 @@ if st.button("צור מתכון"):
 
 st.markdown("---")
 st.caption("נוצר על ידי השף הדיגיטלי | Gemini Flash")
+st.markdown(f"![Views](https://hits.dwyl.com/yonit8342-ux/kosher-chef-ai.svg)")
