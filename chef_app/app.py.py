@@ -1,14 +1,14 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. הגדרת המפתח האישי החדש שלך
-GOOGLE_API_KEY = "AIzaSyCaM8ywwJKJsYc0-FKv3AaxF0jPH9-3byY"
+# 1. הגדרת המפתח החדש שנוצר
+GOOGLE_API_KEY = "AIzaSyAwRvhLE2Aft8KSNiCqNol_nmVHOh1Y1TY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# 2. הגדרות דף (חובה להופיע ראשון)
+# 2. הגדרות דף
 st.set_page_config(page_title="שף בינה מלאכותית", page_icon="🍲")
 
-# 3. חיבור ל-Google Analytics (המזהה שלך)
+# 3. חיבור ל-Google Analytics
 GA_ID = "G-4WZTVRVRHX" 
 st.markdown(f"""
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
@@ -20,7 +20,7 @@ st.markdown(f"""
     </script>
     """, unsafe_allow_html=True)
 
-# 4. עיצוב יישור לימין (RTL) ותצוגה נקייה
+# 4. עיצוב יישור לימין (RTL)
 st.markdown("""
     <style>
     .main, .stTextInput, .stButton, div[data-testid="stMarkdownContainer"] {
@@ -45,8 +45,7 @@ st.markdown("""
 st.title("🍲 שף בינה מלאכותית")
 st.write("שלום! כתבו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים.")
 
-# תיבת קלט
-ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, פטריות, בצל...")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, בצל, ביצים...")
 
 if st.button("צור מתכון עכשיו"):
     if ingredients:
@@ -55,8 +54,7 @@ if st.button("צור מתכון עכשיו"):
                 # שימוש במודל Gemini 1.5 Flash
                 model = genai.GenerativeModel('gemini-1.5-flash')
                 
-                # הנחיה למודל
-                prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה בשלבים."
+                prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה ברורים."
                 
                 response = model.generate_content(prompt)
                 
@@ -69,7 +67,7 @@ if st.button("צור מתכון עכשיו"):
                     
             except Exception as e:
                 st.error("חלה שגיאה בחיבור.")
-                st.info("אנא וודאו שהמפתח הופעל כראוי ב-Google AI Studio ושהגדרתם את ה-Billing (גם אם בחינם).")
+                st.info("אם המפתח חדש, ייתכן שייקח לגוגל דקה אחת להפעיל אותו סופית.")
     else:
         st.warning("נא להזין לפחות מצרך אחד.")
 
