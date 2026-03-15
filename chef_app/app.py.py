@@ -2,14 +2,13 @@ import streamlit as st
 import google.generativeai as genai
 
 # 1. הגדרת המפתח של גוגל בינה מלאכותית
-# וודא שהמפתח הבא תקף. אם יש שגיאה אדומה, מומלץ להחליפו במפתח חדש מ-Google AI Studio
 GOOGLE_API_KEY = "AIzaSyDl0NKD7aRmNGUmVKQQAxUpDdCgEo3RSjU"
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# 2. הגדרות דף (חייב להופיע ראשון)
+# 2. הגדרות דף
 st.set_page_config(page_title="שף בינה מלאכותית", page_icon="🍲")
 
-# 3. חיבור ל-Google Analytics (המזהה שלך)
+# 3. חיבור ל-Google Analytics
 GA_ID = "G-4WZTVRVRHX" 
 st.markdown(f"""
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
@@ -46,17 +45,15 @@ st.markdown("""
 st.title("🍲 שף בינה מלאכותית")
 st.write("שלום! כתבו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים.")
 
-# תיבת קלט
 ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: אורז, עוף, גזר...")
 
 if st.button("צור מתכון עכשיו"):
     if ingredients:
         with st.spinner('השף חושב על מתכון...'):
             try:
-                # שימוש במודל Gemini 1.5 Flash
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                # שינוי השם למודל היציב ביותר שיפתור את שגיאת ה-404
+                model = genai.GenerativeModel('gemini-pro')
                 
-                # הנחיה למודל
                 prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה בשלבים."
                 
                 response = model.generate_content(prompt)
@@ -66,14 +63,13 @@ if st.button("צור מתכון עכשיו"):
                     st.markdown("---")
                     st.write(response.text)
                 else:
-                    st.error("לא התקבל תוכן מהבינה המלאכותית. נסה שוב.")
+                    st.error("לא התקבל תוכן. נסה שוב.")
                     
             except Exception as e:
                 st.error("חלה שגיאה בחיבור לשרת ה-AI.")
-                # הדפסת השגיאה הטכנית למקרה שתרצה לבדוק לעומק
                 st.info(f"פרטי שגיאה: {str(e)}")
     else:
         st.warning("נא להזין לפחות מצרך אחד.")
 
 st.markdown("---")
-st.caption("מערכת המדידה פעילה | כל הזכויות שמורות לשף הדיגיטלי")
+st.caption("מערכת המדידה פעילה | השף מוכן לעבודה")
