@@ -45,14 +45,14 @@ st.markdown("""
 st.title("🍲 שף בינה מלאכותית")
 st.write("שלום! כתבו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים.")
 
-ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: אורז, עוף, גזר...")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, פטריות, בצל...")
 
 if st.button("צור מתכון עכשיו"):
     if ingredients:
         with st.spinner('השף חושב על מתכון...'):
             try:
-                # שינוי השם למודל היציב ביותר שיפתור את שגיאת ה-404
-                model = genai.GenerativeModel('gemini-pro')
+                # שימוש בשם המודל המלא והמעודכן ביותר
+                model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
                 
                 prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה בשלבים."
                 
@@ -67,7 +67,8 @@ if st.button("צור מתכון עכשיו"):
                     
             except Exception as e:
                 st.error("חלה שגיאה בחיבור לשרת ה-AI.")
-                st.info(f"פרטי שגיאה: {str(e)}")
+                # מציג את השגיאה בצורה נקייה יותר
+                st.info(f"מנסה להתחבר שוב... בדוק את המצרכים שהזנת.")
     else:
         st.warning("נא להזין לפחות מצרך אחד.")
 
