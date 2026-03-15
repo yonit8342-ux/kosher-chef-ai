@@ -1,77 +1,57 @@
 import streamlit as st
 import google.generativeai as genai
+from google.generativeai.types import RequestOptions
 
-# 1. הגדרת המפתח האישי שלך
+# 1. הגדרת המפתח שלך
 GOOGLE_API_KEY = "AIzaSyAwRvhLE2Aft8KSNiCqNol_nmVHOh1Y1TY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # 2. הגדרות דף
 st.set_page_config(page_title="שף בינה מלאכותית", page_icon="🍲")
 
-# 3. חיבור ל-Google Analytics
-GA_ID = "G-4WZTVRVRHX" 
-st.markdown(f"""
-    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){{dataLayer.push(arguments);}}
-        gtag('js', new Date());
-        gtag('config', '{GA_ID}');
-    </script>
-    """, unsafe_allow_html=True)
-
-# 4. עיצוב יישור לימין (RTL)
+# 3. עיצוב RTL
 st.markdown("""
     <style>
     .main, .stTextInput, .stButton, div[data-testid="stMarkdownContainer"] {
         direction: RTL;
         text-align: right;
     }
-    input {
-        direction: RTL !important;
-        text-align: right !important;
-    }
-    div.stButton > button {
-        width: 100%;
-        border-radius: 10px;
-        background-color: #ff4b4b;
-        color: white;
-        font-weight: bold;
-    }
+    input { direction: RTL !important; text-align: right !important; }
+    div.stButton > button { width: 100%; border-radius: 10px; background-color: #ff4b4b; color: white; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
 # --- תוכן האתר ---
 st.title("🍲 שף בינה מלאכותית")
-st.write("שלום! כתבו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים.")
+st.write("הזינו מצרכים והשף יבנה לכם מתכון כשר וטעים.")
 
-ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: תפוחי אדמה, פטריות, בצל...")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: עוף, תפוחי אדמה, סילאן...")
 
 if st.button("צור מתכון עכשיו"):
     if ingredients:
-        with st.spinner('השף חושב על מתכון...'):
+        with st.spinner('השף מתחבר לשרת היציב...'):
             try:
-                # התיקון הקריטי: הגדרת המודל בצורה מפורשת לגרסה היציבה
+                # התיקון הקריטי: הכרחת הקוד להשתמש בגרסה v1 ולא ב-v1beta שגורמת לשגיאה
                 model = genai.GenerativeModel('gemini-1.5-flash')
                 
                 prompt = f"צור מתכון כשר, פשוט וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כתוב את המתכון עם רשימת מצרכים מסודרת והוראות הכנה ברורות."
                 
-                # שליחת הבקשה
-                response = model.generate_content(prompt)
+                # שימוש ב-RequestOptions כדי לעקוף את שגיאת ה-404
+                response = model.generate_content(
+                    prompt,
+                    request_options=RequestOptions(api_version='v1')
+                )
                 
                 if response.text:
                     st.success("הנה המתכון שלך:")
                     st.markdown("---")
                     st.write(response.text)
-                else:
-                    st.error("לא התקבל תוכן מהשרת.")
-                    
+                
             except Exception as e:
-                # הצגת שגיאה ידידותית
-                st.error("השף נתקל בבעיה טכנית.")
-                st.caption(f"פרטי שגיאה לאבחון: {str(e)}")
+                st.error("שגיאת התחברות.")
+                if "404" in str(e):
+                    st.warning("גוגל עדיין מפנה אותך לגרסה ישנה. נסה ללחוץ שוב על הכפתור בעוד רגע.")
+                else:
+                    st.caption(f"פרטים: {str(e)}")
     else:
-        st.warning("נא להזין לפחות מצרך אחד.")
-
-st.markdown("---")
-st.caption("השף הדיגיטלי מוכן | המדידה פעילה")
+        st.warning("נא להזין מצרכים.")
