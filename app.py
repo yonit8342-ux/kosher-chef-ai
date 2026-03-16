@@ -43,7 +43,7 @@ if st.button("צור מתכון עכשיו"):
         with st.spinner('השף חושב על מתכון...'):
             try:
                 # שימוש במודל העדכני ביותר ללא v1beta
-                model = genai.GenerativeModel('gemini-1.5-flash')
+               model = genai.GenerativeModel('gemini-flash')
                 
                 # יצירת התוכן
                 prompt = f"אתה שף מומחה. צור מתכון כשר, ברור וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. כלול רשימת מצרכים והוראות הכנה."
