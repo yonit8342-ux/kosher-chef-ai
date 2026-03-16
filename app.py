@@ -25,7 +25,7 @@ if st.button("צור מתכון עכשיו"):
     if ingredients:
         with st.spinner('השף חושב...'):
             try:
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                model = genai.GenerativeModel('gemini-flash')
                 prompt = f"אתה שף מומחה. צור מתכון כשר, ברור וטעים בעברית עבור: {ingredients}"
                 response = model.generate_content(prompt)
                 st.success("הנה המתכון:")
