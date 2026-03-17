@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import streamlit.components.v1 as components
 
-# פונקציית Google Analytics
+# אנטילקס (Analytics)
 def add_analytics(tag_id="4WZTVRVRHX"):
     script = f"""
         <script async src="https://www.googletagmanager.com/gtag/js?id={tag_id}"></script>
@@ -18,40 +18,40 @@ def add_analytics(tag_id="4WZTVRVRHX"):
 st.set_page_config(page_title="שף כשר AI", page_icon="🍲")
 add_analytics()
 
-# עיצוב RTL
+# עיצוב RTL מלא
 st.markdown("""<style>
     .main, .stTextInput, .stButton { direction: RTL; text-align: right; }
     input { direction: RTL !important; text-align: right !important; }
-    div.stButton > button { width: 100%; background-color: #ff4b4b; color: white; font-weight: bold; }
+    div.stButton > button { width: 100%; background-color: #ff4b4b; color: white; font-weight: bold; border-radius: 8px; }
 </style>""", unsafe_allow_html=True)
 
 # המפתח האחרון שסיפקת
 API_KEY = "AIzaSyB32ZAV7A7TFi8bg694V056In2z42_MZuc"
 genai.configure(api_key=API_KEY)
 
-st.title("🍲 שף בינה מלאכולית כשר")
-ingredients = st.text_input("מה נבשל היום?", placeholder="למשל: עוף, תפוחי אדמה, פפריקה...")
+st.title("🍲 שף בינה מלאכותית כשר")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: עוף, סילאן, בצל...")
 
 if st.button("צור מתכון"):
     if ingredients:
-        with st.spinner('השף בודק את המודלים הזמינים...'):
-            # רשימת שמות מודלים אפשריים - המערכת תנסה את כולם
-            possible_models = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro']
-            
-            recipe_found = False
-            for model_name in possible_models:
-                try:
-                    model = genai.GenerativeModel(model_name)
-                    response = model.generate_content(f"כתוב מתכון כשר וטעים בעברית עבור: {ingredients}")
-                    if response.text:
-                        st.success(f"המתכון מוכן! (נוצר באמצעות {model_name})")
-                        st.write(response.text)
-                        recipe_found = True
-                        break
-                except Exception:
-                    continue
-            
-            if not recipe_found:
-                st.error("שגיאה 404: המודל לא נמצא. וודא שה-API Key מופעל ב-Google AI Studio ושהגדרת את המודל לשימוש חופשי.")
+        with st.spinner('השף מתחבר למערכת...'):
+            try:
+                # בדיקה אילו מודלים באמת זמינים עבור המפתח הזה
+                available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+                
+                if not available_models:
+                    st.error("לא נמצאו מודלים זמינים למפתח זה. וודא שהגדרת את המפתח ב-AI Studio כראוי.")
+                else:
+                    # שימוש במודל הראשון שזמין (לרוב זה יהיה ה-Flash או ה-Pro)
+                    model_to_use = available_models[0]
+                    model = genai.GenerativeModel(model_to_use)
+                    
+                    response = model.generate_content(f"אתה שף מומחה. כתוב מתכון כשר וטעים בעברית עבור: {ingredients}")
+                    
+                    st.success(f"המתכון מוכן! (באמצעות {model_to_use})")
+                    st.write(response.text)
+            except Exception as e:
+                st.error("שגיאה קריטית בחיבור לגוגל.")
+                st.code(str(e))
     else:
         st.warning("בבקשה תכתוב לפחות מצרך אחד.")
