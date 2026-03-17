@@ -28,34 +28,43 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("🍲 שף בינה מלאכותית כשר")
-ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: עוף, בצל, תפוחי אדמה...")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: בשר, תפוחי אדמה, פטריות...")
 
 if st.button("צור מתכון"):
     if ingredients:
         with st.spinner('השף מגבש מתכון טעים...'):
             api_key = "AIzaSyAwRvhLE2Aft8KSNiCqNol_nmVHOh1Y1TY"
             
-            # הפתרון הסופי: חיבור למודל gemini-pro שנתמך ב-100% ב-v1
-            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={api_key}"
+            # ניסיון אחרון עם הכתובת הנפוצה ביותר כיום למודל 1.5 פלאש
+            # שימוש בגרסת v1 עם השם המלא
+            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
             
             headers = {'Content-Type': 'application/json'}
             data = {
-                "contents": [{"parts": [{"text": f"אתה שף מומחה. צור מתכון כשר וטעים בעברית עבור המצרכים הבאים: {ingredients}"}]}]
+                "contents": [{"parts": [{"text": f"אתה שף מומחה. כתוב מתכון כשר וטעים בעברית עבור: {ingredients}"}]}]
             }
             
             try:
-                # שליחת הבקשה הישירה
                 response = requests.post(url, headers=headers, json=data)
                 
-                # אם הכל תקין, נציג את המתכון
                 if response.status_code == 200:
                     result = response.json()
                     recipe_text = result['candidates'][0]['content']['parts'][0]['text']
                     st.success("הנה המתכון שמצאתי:")
                     st.write(recipe_text)
                 else:
-                    st.error("הייתה בעיה בחיבור לגוגל.")
-                    st.code(f"קוד שגיאה: {response.status_code}\n{response.text}")
+                    # אם עדיין יש 404, ננסה אוטומטית את גרסת ה-beta בשביל המודל הזה
+                    url_beta = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+                    response_beta = requests.post(url_beta, headers=headers, json=data)
+                    
+                    if response_beta.status_code == 200:
+                        result = response_beta.json()
+                        recipe_text = result['candidates'][0]['content']['parts'][0]['text']
+                        st.success("הנה המתכון שמצאתי (מחיבור חלופי):")
+                        st.write(recipe_text)
+                    else:
+                        st.error("לא הצלחתי למצוא מודל פעיל. אנא בדוק את המפתח.")
+                        st.code(f"שגיאה: {response_beta.status_code}\n{response_beta.text}")
                     
             except Exception as e:
                 st.error(f"שגיאת תקשורת: {str(e)}")
