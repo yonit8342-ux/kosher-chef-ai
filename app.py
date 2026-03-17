@@ -9,15 +9,22 @@ ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למש�
 if st.button("צור מתכון"):
     if ingredients:
         with st.spinner('מתחבר לשרת...'):
-            # המפתח החדש שלך
             api_key = "AIzaSyAial-YtGsqJ8ez7ZZRr7VChxbUJklKq8M"
             
-            # הכתובת המעודכנת למניעת 404
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+            # ✔️ תיקון: שימוש במודל וגרסה נכונים
+            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
             
             headers = {'Content-Type': 'application/json'}
             data = {
-                "contents": [{"parts": [{"text": f"אתה שף מומחה. כתוב מתכון כשר וטעים בעברית עבור: {ingredients}"}]}]
+                "contents": [
+                    {
+                        "parts": [
+                            {
+                                "text": f"אתה שף מומחה. כתוב מתכון כשר וטעים בעברית עבור: {ingredients}"
+                            }
+                        ]
+                    }
+                ]
             }
             
             try:
@@ -25,12 +32,17 @@ if st.button("צור מתכון"):
                 
                 if response.status_code == 200:
                     result = response.json()
-                    recipe_text = result['candidates'][0]['content']['parts'][0]['text']
-                    st.success("הנה המתכון!")
-                    st.write(recipe_text)
+                    
+                    try:
+                        recipe_text = result['candidates'][0]['content']['parts'][0]['text']
+                        st.success("הנה המתכון!")
+                        st.write(recipe_text)
+                    except (KeyError, IndexError):
+                        st.error("התגובה מהשרת לא בפורמט צפוי")
+                        st.json(result)
                 else:
-                    # אם עדיין יש 404, הקוד יציג את השגיאה המפורטת מהשרת
                     st.error(f"שגיאה מהשרת: {response.status_code}")
                     st.json(response.json())
+                    
             except Exception as e:
                 st.error(f"שגיאת חיבור: {str(e)}")
