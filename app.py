@@ -13,7 +13,7 @@ st.markdown("""<style>
 # וודא שזה מפתח חדש לגמרי מ-AI Studio!
 MY_KEY = "הכנס_כאן_מפתח_חדש_לגמרי"
 
-if MY_KEY == "הכנס_כאן_מפתח_חדש_לגמרי":
+if MY_KEY == "AIzaSyBJu0xP78jqt3P_CwFFfR3v7_cE0B3A6zw":
     st.warning("עליך להכניס את המפתח החדש בקוד כדי שזה יעבוד.")
     st.stop()
 
