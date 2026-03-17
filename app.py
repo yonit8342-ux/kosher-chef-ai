@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import streamlit.components.v1 as components
 
-# פונקציית Google Analytics (אנטילקס)
+# פונקציית Google Analytics
 def add_analytics(tag_id="4WZTVRVRHX"):
     script = f"""
         <script async src="https://www.googletagmanager.com/gtag/js?id={tag_id}"></script>
@@ -25,31 +25,24 @@ st.markdown("""<style>
     div.stButton > button { width: 100%; background-color: #ff4b4b; color: white; font-weight: bold; }
 </style>""", unsafe_allow_html=True)
 
-# משיכת המפתח בצורה מאובטחת
+# משיכת המפתח בצורה מאובטחת מה-Secrets
 try:
-    # אם הגדרת ב-Secrets
-    api_key = st.secrets.get("GOOGLE_API_KEY")
-    # אם לא הגדרת ב-Secrets, ניתן לשים כאן זמנית לבדיקה (אך זה עלול להיחסם שוב)
-    if not api_key:
-        api_key = "הכנס_כאן_את_המפתח_החדש_רק_לבדיקה_זמנית"
-    
+    api_key = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
-except Exception as e:
-    st.error("שגיאה בהגדרת ה-API. וודא שהמפתח הוזן כראוי.")
+except:
+    st.error("שגיאה: המפתח לא הוגדר ב-Secrets של Streamlit.")
     st.stop()
 
 st.title("🍲 שף בינה מלאכולית כשר")
-ingredients = st.text_input("מה נבשל היום?", placeholder="למשל: בשר, תפוחי אדמה, פטריות...")
+ingredients = st.text_input("מה נבשל היום?", placeholder="למשל: בשר, סילאן, בצל...")
 
 if st.button("צור מתכון"):
     if ingredients:
-        with st.spinner('השף מגבש מתכון כשר וטעים...'):
+        with st.spinner('השף מגבש מתכון...'):
             try:
+                model = genai.GenerativeModel('gemini-1.5-flash')
                 response = model.generate_content(f"כתוב מתכון כשר וטעים בעברית עבור: {ingredients}")
-                st.success("הנה המתכון שמצאתי:")
+                st.success("הנה המתכון:")
                 st.write(response.text)
             except Exception as e:
-                st.error("חלה שגיאה בחיבור למודל. וודא שהמפתח בתוקף.")
-    else:
-        st.warning("בבקשה תכתוב לפחות מצרך אחד.")
+                st.error("חלה שגיאה בחיבור למודל. וודא שהמפתח ב-Secrets תקין.")
