@@ -16,7 +16,6 @@ def add_analytics(tag_id):
     """
     components.html(script, height=0)
 
-# הגדרות דף ועיצוב
 st.set_page_config(page_title="שף כשר AI", page_icon="🍲")
 add_analytics("4WZTVRVRHX")
 
@@ -26,42 +25,37 @@ st.markdown("""<style>
     div.stButton > button { width: 100%; background-color: #ff4b4b; color: white; font-weight: bold; border-radius: 8px; }
 </style>""", unsafe_allow_html=True)
 
-st.title("🍲 שף בינה מלאכולית כשר")
-st.subheader("הכנס מצרכים וקבל מתכון טעים")
-
-ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: בשר בקר, בצל, יין אדום...")
+st.title("🍲 שף בינה מלאכותית כשר")
+ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למשל: דג סלמון, לימון, שום...")
 
 if st.button("צור מתכון"):
     if ingredients:
-        with st.spinner('השף שוקד על המתכון עבורך...'):
-            # המפתח החדש שסיפקת
+        with st.spinner('השף מחשב מסלול מחדש...'):
             api_key = "AIzaSyAial-YtGsqJ8ez7ZZRr7VChxbUJklKq8M"
             
-            # ניסיון דרך מספר נתיבים כדי למנוע שגיאות 404
-            urls = [
-                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}",
-                f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}"
-            ]
+            # ניסיון אחרון עם פורמט ה-URL המדויק ביותר ל-2026
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
             
             data = {
-                "contents": [{"parts": [{"text": f"אתה שף מומחה. כתוב מתכון כשר וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}. הקפד על הוראות הכנה ברורות."}]}]
+                "contents": [{"parts": [{"text": f"אתה שף מומחה. כתוב מתכון כשר וטעים בעברית עבור המצרכים הבאים: {ingredients}"}]}]
             }
             
-            success = False
-            for url in urls:
-                try:
-                    response = requests.post(url, json=data, timeout=10)
-                    if response.status_code == 200:
-                        result = response.json()
-                        recipe_text = result['candidates'][0]['content']['parts'][0]['text']
-                        st.success("הנה המתכון שמצאתי:")
-                        st.write(recipe_text)
-                        success = True
-                        break
-                except Exception:
-                    continue
-            
-            if not success:
-                st.error("חל עיכוב קטן בחיבור לשרת. אנא נסה ללחוץ שוב על הכפתור בעוד רגע.")
+            try:
+                response = requests.post(url, json=data, timeout=15)
+                if response.status_code == 200:
+                    result = response.json()
+                    recipe_text = result['candidates'][0]['content']['parts'][0]['text']
+                    st.success("הנה המתכון שמצאתי:")
+                    st.write(recipe_text)
+                else:
+                    # אם עדיין יש 404, ננסה מודל שתמיד זמין
+                    url_fallback = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
+                    response_fb = requests.post(url_fallback, json=data, timeout=15)
+                    if response_fb.status_code == 200:
+                        st.write(response_fb.json()['candidates'][0]['content']['parts'][0]['text'])
+                    else:
+                        st.error(f"שגיאה {response_fb.status_code}: המודל לא מגיב. בדוק אם ה-API Key פעיל ב-AI Studio.")
+            except Exception as e:
+                st.error(f"שגיאת תקשורת: {str(e)}")
     else:
         st.warning("בבקשה תכתוב לפחות מצרך אחד.")
