@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. עיצוב RTL והצמדה לימין
+# הגדרות דף ועיצוב RTL
 st.set_page_config(page_title="שף כשר AI", page_icon="🍲")
 st.markdown("""
     <style>
@@ -15,44 +15,40 @@ st.markdown("""
     }
     div.stButton > button {
         width: 100%;
-        background-color: #ff4b4b;
+        background-color: #4CAF50;
         color: white;
         font-weight: bold;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. הגדרת המפתח והמודל
+# משיכת מפתח ה-API מה-Secrets
 api_key = st.secrets.get("GEMINI_KEY")
 
 if api_key:
+    # הגדרת ה-SDK עם המפתח שלך
     genai.configure(api_key=api_key)
-    # שימוש במודל 2.0-flash - המודל הכי עדכני ומהיר
-    model = genai.GenerativeModel('gemini-2.0-flash')
+    # שימוש במודל יציב עם תמיכה רחבה
+    model = genai.GenerativeModel('gemini-1.5-flash')
 
-# 3. ממשק המשתמש
-st.title("🍲 שף בינה מלאכותית כשר")
-st.write("הזינו מצרכים לקבלת מתכון כשר (מעוצב לימין):")
-
-ingredients = st.text_input("מה נבשל היום?", placeholder="למשל: עוף, אורז, פפריקה...")
+st.title("🍲 שף כשר - גרסה יציבה")
+ingredients = st.text_input("מה נבשל היום?", placeholder="הכנס מצרכים כאן...")
 
 if st.button("צור מתכון כשר"):
     if not api_key:
-        st.error("חסר מפתח API ב-Secrets!")
+        st.error("חסר מפתח API בהגדרות ה-Secrets!")
     elif ingredients:
         try:
-            with st.spinner('השף מפיק מתכון...'):
-                response = model.generate_content(f"אתה שף כשר מומחה. כתוב מתכון כשר, ברור וטעים בעברית עבור המצרכים הבאים: {ingredients}")
-                st.success("הנה המתכון המבוקש:")
-                st.markdown(f"""
-                <div style="direction: RTL; text-align: right; background-color: #f0f2f6; padding: 20px; border-radius: 10px; border: 1px solid #ddd;">
-                {response.text}
-                </div>
-                """, unsafe_allow_html=True)
+            with st.spinner('מתחבר לשרת גוגל...'):
+                # פנייה למודל
+                response = model.generate_content(f"אתה שף כשר. כתוב מתכון כשר וטעים בעברית עבור המצרכים הבאים: {ingredients}")
+                st.success("הצלחנו!")
+                st.markdown(f'<div style="direction: RTL; text-align: right; background-color: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #ddd;">{response.text}</div>', unsafe_allow_html=True)
         except Exception as e:
+            # טיפול בשגיאת המכסה שראינו בצילומי המסך
             if "429" in str(e):
-                st.error("המכסה היומית נגמרה. גוגל מגבילה את המודל הזה בגרסה החינמית, נסה שוב בעוד כמה דקות.")
+                st.error("הגענו למכסה המקסימלית. גוגל מגבילה את המודל בגרסה החינמית. נסה שוב בעוד דקה.")
             else:
                 st.error(f"חלה שגיאה: {e}")
     else:
-        st.warning("נא להזין מצרכים.")
+        st.warning("נא להזין מצרכים קודם.")
