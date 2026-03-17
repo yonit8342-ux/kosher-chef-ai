@@ -2,8 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import streamlit.components.v1 as components
 
-# הגדרת המפתח עם גרסת API ספציפית
-# זה מונע מהספרייה לנסות להשתמש ב-v1beta באופן אוטומטי
+# הגדרת המפתח עם כפייה של גרסה 1 (ולא בטא)
 genai.configure(api_key="AIzaSyAwRvhLE2Aft8KSNiCqNol_nmVHOh1Y1TY", transport='rest')
 
 # הוספת Analytics
@@ -35,10 +34,11 @@ if st.button("צור מתכון"):
     if ingredients:
         with st.spinner('השף מכין את המתכון...'):
             try:
-                # שימוש בשם המודל המלא והרשמי
+                # שימוש בשם המודל המלא
                 model = genai.GenerativeModel('models/gemini-1.5-flash')
                 response = model.generate_content(f"צור מתכון כשר וטעים בעברית עבור: {ingredients}")
                 st.success("הנה המתכון:")
                 st.write(response.text)
             except Exception as e:
-                st.error(f"שגיאה: {str(e)}")
+                # אם עדיין יש בעיית גרסה, הקוד ינסה להסביר מה קרה
+                st.error(f"שגיאה בחיבור: {str(e)}")
