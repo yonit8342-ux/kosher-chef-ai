@@ -24,7 +24,7 @@ st.markdown("""
 api_key = st.secrets.get("GEMINI_KEY")
 
 # 3. ממשק המשתמש
-st.title("🍲 שף בינה מלאכולית כשר")
+st.title("🍲 שף בינה מלאכותית כשר")
 st.write("הזינו את המצרכים שיש לכם בבית, והשף יבנה לכם מתכון כשר וטעים!")
 
 ingredients = st.text_input("מה המצרכים שלך?", placeholder="למשל: עוף, תפוחי אדמה, סילאן...")
@@ -34,8 +34,9 @@ if st.button("צור מתכון כשר עכשיו"):
         st.error("חסר מפתח API בתוך ה-Secrets של Streamlit!")
     elif ingredients:
         with st.spinner('השף מגבש מתכון...'):
-            # שימוש במודל gemini-2.0-flash-lite-001 מתוך הרשימה הזמינה שלך
-url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"            
+            # הגדרת ה-URL והנתונים לשליחה (כאן ההזחה קריטית!)
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+            
             payload = {
                 "contents": [{
                     "parts": [{"text": f"אתה שף מומחה לכשרות. כתוב מתכון כשר, ברור וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}"}]
@@ -51,10 +52,8 @@ url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash
                     recipe = data['candidates'][0]['content']['parts'][0]['text']
                     st.success("הנה המתכון שמצאתי עבורך:")
                     st.markdown(f'<div style="direction: RTL; text-align: right; background-color: #f0f2f6; padding: 20px; border-radius: 10px; border: 1px solid #ddd;">{recipe}</div>', unsafe_allow_html=True)
-                elif response.status_code == 404:
-                    st.error("המודל לא נמצא. נסה להשתמש בשם מודל אחר מהרשימה.")
                 elif response.status_code == 429:
-                    st.error("הגענו למכסה המקסימלית. נסה שוב בעוד דקה.")
+                    st.error("הגענו למכסה המקסימלית של המודל הזה. נסה שוב בעוד דקה או החלף מודל.")
                 else:
                     error_msg = data.get('error', {}).get('message', 'שגיאה לא ידועה')
                     st.error(f"שגיאת API: {error_msg}")
@@ -67,5 +66,5 @@ url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash
 
 # הערה לניהול גרסאות
 st.sidebar.markdown("---")
-st.sidebar.write("מערכת שף כשר AI - גרסה 2.1")
-st.sidebar.info("הקוד מותאם למודלים החדשים ביותר של גוגל.")
+st.sidebar.write("מערכת שף כשר AI - גרסה 2.2")
+st.sidebar.info("הקוד מתוקן עם הזחות נכונות ומודל 2.0-flash.")
