@@ -1,38 +1,51 @@
 import streamlit as st
 import google.generativeai as genai
 
-# הגדרות עיצוב RTL
 st.set_page_config(page_title="שף כשר AI", page_icon="🍲")
+
+# עיצוב RTL
 st.markdown("""<style>
     .main { direction: RTL; text-align: right; }
     .stTextInput>div>div>input { direction: RTL; text-align: right; }
-    .stButton>button { width: 100%; background-color: #ff4b4b; color: white; height: 3em; font-weight: bold; }
+    .stButton>button { width: 100%; background-color: #ff4b4b; color: white; font-weight: bold; }
 </style>""", unsafe_allow_html=True)
 
-# המפתח החדש שיצרת - שים אותו כאן בין המירכאות
-# וודא שזה מפתח חדש לגמרי מ-AI Studio!
-MY_KEY = "הכנס_כאן_מפתח_חדש_לגמרי"
-
-if MY_KEY == "AIzaSyBJu0xP78jqt3P_CwFFfR3v7_cE0B3A6zw":
-    st.warning("עליך להכניס את המפתח החדש בקוד כדי שזה יעבוד.")
-    st.stop()
-
-genai.configure(api_key=MY_KEY)
+# שימוש במפתח (וודא שהחלפת למפתח חדש ב-Secrets או בקוד)
+try:
+    # מנסה למשוך מה-Secrets, אם אין - לוקח מהקוד (למצבי חירום)
+    api_key = st.secrets.get("GEMINI_KEY", "כאן_שמים_מפתח_חדש_אם_אין_סיקרטס")
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+except Exception as e:
+    st.error(f"שגיאה בהגדרת המפתח: {e}")
 
 st.title("🍲 שף בינה מלאכותית כשר")
-st.write("הזינו מצרכים וקבלו מתכון כשר ברגע:")
-
-ingredients = st.text_input("מה נבשל?", placeholder="למשל: עוף, בצל, דבש...")
+ingredients = st.text_input("מה נבשל?", placeholder="למשל: עוף, בצל...")
 
 if st.button("צור מתכון"):
     if ingredients:
-        with st.spinner('מכין מתכון...'):
-            try:
-                # ניסיון שימוש במודל יציב
-                model = genai.GenerativeModel('gemini-1.5-flash')
-                response = model.generate_content(f"כתוב מתכון כשר וטעים בעברית עבור: {ingredients}")
+        placeholder = st.empty()
+        placeholder.info("השף בודק את המצרכים... (זה אמור לקחת עד 5 שניות)")
+        
+        try:
+            # הוספת הגבלת זמן ודרישה לתשובה קצרה כדי שירוץ מהר
+            response = model.generate_content(
+                f"כתוב מתכון כשר, קצר וטעים בעברית עבור: {ingredients}. תענה רק את המתכון.",
+                generation_config={"timeout": 10}
+            )
+            
+            if response.text:
+                placeholder.empty()
                 st.success("הנה המתכון:")
                 st.markdown(f'<div style="direction: RTL; text-align: right;">{response.text}</div>', unsafe_allow_html=True)
-            except Exception as e:
-                st.error("החיבור נכשל. כנראה שהמפתח נחסם שוב.")
-                st.info("אם זה קורה, הפתרון היחיד הוא לעשות Reboot לאפליקציה בלוח הבקרה של Streamlit.")
+            else:
+                placeholder.error("המודל החזיר תשובה ריקה. נסה שוב.")
+        except Exception as e:
+            placeholder.empty()
+            st.error("חלה שגיאה בחיבור.")
+            if "API_KEY_INVALID" in str(e) or "403" in str(e):
+                st.warning("המפתח נחסם שוב (Leaked). עליך להנפיק חדש ולשים ב-Secrets.")
+            else:
+                st.code(str(e))
+    else:
+        st.warning("הכנס מצרכים קודם.")
