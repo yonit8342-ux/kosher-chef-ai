@@ -35,8 +35,7 @@ if st.button("צור מתכון כשר עכשיו"):
     elif ingredients:
         with st.spinner('השף מגבש מתכון...'):
             # שימוש במודל gemini-2.0-flash-lite-001 מתוך הרשימה הזמינה שלך
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite-001:generateContent?key={api_key}"
-            
+url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"            
             payload = {
                 "contents": [{
                     "parts": [{"text": f"אתה שף מומחה לכשרות. כתוב מתכון כשר, ברור וטעים בעברית המבוסס על המצרכים הבאים: {ingredients}"}]
