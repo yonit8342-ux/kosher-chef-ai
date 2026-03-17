@@ -1,34 +1,38 @@
 import streamlit as st
 import google.generativeai as genai
 
-# הגדרות דף ועיצוב RTL
+# הגדרות עיצוב RTL
 st.set_page_config(page_title="שף כשר AI", page_icon="🍲")
 st.markdown("""<style>
-    .main, .stTextInput, .stButton { direction: RTL; text-align: right; }
-    input { direction: RTL !important; text-align: right !important; }
-    div.stButton > button { width: 100%; background-color: #ff4b4b; color: white; font-weight: bold; }
+    .main { direction: RTL; text-align: right; }
+    .stTextInput>div>div>input { direction: RTL; text-align: right; }
+    .stButton>button { width: 100%; background-color: #ff4b4b; color: white; height: 3em; font-weight: bold; }
 </style>""", unsafe_allow_html=True)
 
-# חיבור מאובטח למפתח
-try:
-    # הקוד מחפש את השם GEMINI_KEY שהגדרת ב-Secrets
-    api_key = st.secrets["GEMINI_KEY"]
-    genai.configure(api_key=api_key)
-    # שימוש במודל יציב
-    model = genai.GenerativeModel('gemini-1.5-flash')
-except Exception:
-    st.error("שגיאה: המפתח 'GEMINI_KEY' לא נמצא ב-Secrets של Streamlit.")
+# המפתח החדש שיצרת - שים אותו כאן בין המירכאות
+# וודא שזה מפתח חדש לגמרי מ-AI Studio!
+MY_KEY = "הכנס_כאן_מפתח_חדש_לגמרי"
+
+if MY_KEY == "הכנס_כאן_מפתח_חדש_לגמרי":
+    st.warning("עליך להכניס את המפתח החדש בקוד כדי שזה יעבוד.")
     st.stop()
 
+genai.configure(api_key=MY_KEY)
+
 st.title("🍲 שף בינה מלאכותית כשר")
-ingredients = st.text_input("מה נבשל היום?", placeholder="למשל: בשר, סילאן, בצל...")
+st.write("הזינו מצרכים וקבלו מתכון כשר ברגע:")
+
+ingredients = st.text_input("מה נבשל?", placeholder="למשל: עוף, בצל, דבש...")
 
 if st.button("צור מתכון"):
     if ingredients:
-        with st.spinner('השף מגבש מתכון...'):
+        with st.spinner('מכין מתכון...'):
             try:
+                # ניסיון שימוש במודל יציב
+                model = genai.GenerativeModel('gemini-1.5-flash')
                 response = model.generate_content(f"כתוב מתכון כשר וטעים בעברית עבור: {ingredients}")
                 st.success("הנה המתכון:")
-                st.write(response.text)
+                st.markdown(f'<div style="direction: RTL; text-align: right;">{response.text}</div>', unsafe_allow_html=True)
             except Exception as e:
-                st.error("חלה שגיאה בחיבור. וודא שהמפתח ב-Secrets לא דלף לגיטהאב.")
+                st.error("החיבור נכשל. כנראה שהמפתח נחסם שוב.")
+                st.info("אם זה קורה, הפתרון היחיד הוא לעשות Reboot לאפליקציה בלוח הבקרה של Streamlit.")
