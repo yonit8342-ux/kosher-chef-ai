@@ -11,8 +11,8 @@ if st.button("צור מתכון"):
         with st.spinner('מתחבר לשרת...'):
             api_key = "AIzaSyAial-YtGsqJ8ez7ZZRr7VChxbUJklKq8M"
             
-            # ✔️ תיקון: שימוש במודל וגרסה נכונים
-            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
+            # ✔️ מודל שעובד
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
             
             headers = {'Content-Type': 'application/json'}
             data = {
@@ -35,8 +35,15 @@ if st.button("צור מתכון"):
                     
                     try:
                         recipe_text = result['candidates'][0]['content']['parts'][0]['text']
+                        
                         st.success("הנה המתכון!")
-                        st.write(recipe_text)
+                        
+                        # ✔️ הצמדה לימין
+                        st.markdown(
+                            f"<div style='text-align: right; direction: rtl;'>{recipe_text}</div>",
+                            unsafe_allow_html=True
+                        )
+                        
                     except (KeyError, IndexError):
                         st.error("התגובה מהשרת לא בפורמט צפוי")
                         st.json(result)
