@@ -19,7 +19,6 @@ def add_analytics(tag_id):
 st.set_page_config(page_title="שף כשר AI", page_icon="🍲")
 add_analytics("4WZTVRVRHX")
 
-# עיצוב מותאם לעברית
 st.markdown("""
     <style>
     .main, .stTextInput, .stButton { direction: RTL; text-align: right; }
@@ -34,11 +33,10 @@ ingredients = st.text_input("מה יש לנו במטבח?", placeholder="למש�
 if st.button("צור מתכון"):
     if ingredients:
         with st.spinner('השף מגבש מתכון טעים...'):
-            # עקיפה ישירה: פנייה ל-API בלי הספרייה הבעייתית של גוגל
             api_key = "AIzaSyAwRvhLE2Aft8KSNiCqNol_nmVHOh1Y1TY"
             
-            # שים לב שכאן אנחנו מכריחים אותו להשתמש ב-v1 היציב!
-            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}"
+            # הפתרון הסופי: חיבור למודל gemini-pro שנתמך ב-100% ב-v1
+            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={api_key}"
             
             headers = {'Content-Type': 'application/json'}
             data = {
@@ -56,7 +54,6 @@ if st.button("צור מתכון"):
                     st.success("הנה המתכון שמצאתי:")
                     st.write(recipe_text)
                 else:
-                    # אם עדיין יש שגיאה, נדפיס בדיוק מה גוגל אומרים לנו
                     st.error("הייתה בעיה בחיבור לגוגל.")
                     st.code(f"קוד שגיאה: {response.status_code}\n{response.text}")
                     
