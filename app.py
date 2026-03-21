@@ -1,4 +1,4 @@
-import streamlit as st
+פחותimport streamlit as st
 import google.generativeai as genai
 
 # 1. עיצוב RTL (ימין לשמאל)
