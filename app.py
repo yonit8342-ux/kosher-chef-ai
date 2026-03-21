@@ -35,7 +35,7 @@ st.markdown("""
         border: 2px solid #4CAF50;
     }
     </style>
-    ", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # 2. הגדרת המפתח והמודל
 api_key = st.secrets.get("GEMINI_KEY")
@@ -78,13 +78,13 @@ if st.button("🍳 בשל לי מתכון!"):
 המצרכים: {ingredients}
 
 כתוב את המתכון בפורמט הבא:
-📋 **חומרים:**
+חומרים:
 (רשום את כל החומרים הדרושים)
 
-👨‍🍳 **הוראות הכנה:**
+הוראות הכנה:
 (רשום שלב אחר שלב)
 
-💡 **טיפים:**
+טיפים:
 (הוסף טיפים שימושיים או חלופות)"""
                 
                 response = model.generate_content(prompt)
